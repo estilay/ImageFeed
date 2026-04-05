@@ -3,9 +3,8 @@ import UIKit
 final class ImagesListCell: UITableViewCell {
     static let reuseIndetifier = "ImagesListCell"
     
-    @IBOutlet var cellImage: UIImageView!
-    @IBOutlet var dateLabel: UILabel!
-    @IBOutlet var likeButton: UIButton!
+    @IBOutlet weak var cellImage: UIImageView!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var likeButton: UIButton!
     
 }
-
