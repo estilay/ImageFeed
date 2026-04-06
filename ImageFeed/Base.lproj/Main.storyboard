@@ -28,7 +28,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="lBa-IJ-1hS" userLabel="Cell Image">
-                                                    <rect key="frame" x="16" y="4" width="361" height="167"/>
+                                                    <rect key="frame" x="16" y="4" width="361" height="171"/>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -36,6 +36,25 @@
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                 </imageView>
+                                                <view userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="GLf-j0-vxe" userLabel="GradientView" customClass="ImagesListBottomGradientView" customModule="ImageFeed" customModuleProvider="target">
+                                                    <rect key="frame" x="16" y="145" width="361" height="30"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <accessibility key="accessibilityConfiguration">
+                                                        <accessibilityTraits key="traits" notEnabled="YES"/>
+                                                    </accessibility>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="0Ew-6x-bQN"/>
+                                                    </constraints>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="16"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.maskedCorners">
+                                                            <integer key="value" value="12"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
+                                                </view>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gg9-Im-yja" userLabel="Like Button">
                                                     <rect key="frame" x="333" y="4" width="44" height="44"/>
                                                     <constraints>
@@ -46,7 +65,7 @@
                                                     <state key="normal" title="Button" image="like_button_on"/>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="28 сентября 2025" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GDL-eg-clx" userLabel="Date Label">
-                                                    <rect key="frame" x="24" y="147.33333333333334" width="107" height="15.666666666666657"/>
+                                                    <rect key="frame" x="24" y="151.33333333333334" width="107" height="15.666666666666657"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="13"/>
                                                     <color key="textColor" name="YP White"/>
                                                     <nil key="highlightedColor"/>
@@ -54,15 +73,18 @@
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
+                                                <constraint firstItem="GLf-j0-vxe" firstAttribute="leading" secondItem="vh0-C1-yd4" secondAttribute="leading" constant="16" id="2WJ-RU-ZRw"/>
+                                                <constraint firstAttribute="bottom" secondItem="GLf-j0-vxe" secondAttribute="bottom" id="AzO-Lk-3Kw"/>
                                                 <constraint firstItem="GDL-eg-clx" firstAttribute="leading" secondItem="lBa-IJ-1hS" secondAttribute="leading" constant="8" id="Baw-MG-rNq"/>
                                                 <constraint firstItem="lBa-IJ-1hS" firstAttribute="bottom" secondItem="GDL-eg-clx" secondAttribute="bottom" constant="8" id="DrS-BB-aaR"/>
                                                 <constraint firstItem="lBa-IJ-1hS" firstAttribute="top" secondItem="vh0-C1-yd4" secondAttribute="top" constant="4" id="G4v-vS-0dX"/>
+                                                <constraint firstAttribute="trailing" secondItem="GLf-j0-vxe" secondAttribute="trailing" constant="16" id="MCB-pw-QLN"/>
                                                 <constraint firstItem="lBa-IJ-1hS" firstAttribute="trailing" secondItem="gg9-Im-yja" secondAttribute="trailing" id="OYl-S6-Qxi"/>
                                                 <constraint firstItem="gg9-Im-yja" firstAttribute="top" secondItem="lBa-IJ-1hS" secondAttribute="top" id="PQE-r6-OFq"/>
                                                 <constraint firstAttribute="trailing" secondItem="lBa-IJ-1hS" secondAttribute="trailing" constant="16" id="TPS-km-Boy"/>
                                                 <constraint firstItem="lBa-IJ-1hS" firstAttribute="leading" secondItem="vh0-C1-yd4" secondAttribute="leading" constant="16" id="aZL-Ap-6ZD"/>
                                                 <constraint firstItem="lBa-IJ-1hS" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GDL-eg-clx" secondAttribute="trailing" constant="8" id="fvk-sC-0oJ"/>
-                                                <constraint firstAttribute="bottom" secondItem="lBa-IJ-1hS" secondAttribute="bottom" constant="4" id="i5I-gW-5ds"/>
+                                                <constraint firstAttribute="bottom" secondItem="lBa-IJ-1hS" secondAttribute="bottom" id="i5I-gW-5ds"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
