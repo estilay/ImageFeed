@@ -196,7 +196,6 @@
                                             <outlet property="cellImage" destination="lBa-IJ-1hS" id="Gte-zU-WDN"/>
                                             <outlet property="dateLabel" destination="GDL-eg-clx" id="EqV-6r-iRV"/>
                                             <outlet property="likeButton" destination="gg9-Im-yja" id="JUz-oW-AdY"/>
-                                            <segue destination="OkJ-Et-q7E" kind="show" id="Vo9-si-4He"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -214,11 +213,12 @@
                     <navigationItem key="navigationItem" id="BBf-Yw-ZwU"/>
                     <connections>
                         <outlet property="tableView" destination="AG9-H5-2J1" id="8kE-cx-07z"/>
+                        <segue destination="OkJ-Et-q7E" kind="show" identifier="ShowSingleImage" id="n7s-G4-8We"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="334" y="-163"/>
+            <point key="canvasLocation" x="346" y="-163"/>
         </scene>
         <!--Single Image View Controller-->
         <scene sceneID="oGx-hf-u9k">
