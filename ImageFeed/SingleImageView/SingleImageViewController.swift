@@ -3,10 +3,7 @@ import UIKit
 final class SingleImageViewController: UIViewController {
     var image: UIImage? {
         didSet {
-            guard isViewLoaded, let image else { return }
-            imageView.image = image
-            imageView.frame.size = image.size
-            rescaleAndCenterImageInScrollView(image: image)
+            updateImageViewWithImage()
         }
     }
     
@@ -16,13 +13,7 @@ final class SingleImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let image else { return }
-        imageView.image = image
-        imageView.frame.size = image.size
-        
-        scrollView.minimumZoomScale = 0.1
-        scrollView.maximumZoomScale = 1.25
-        rescaleAndCenterImageInScrollView(image: image)
+        setupImageAndScrollView()
     }
     
     @IBAction func didTapBackwardButton(_ sender: Any) {
@@ -36,7 +27,23 @@ final class SingleImageViewController: UIViewController {
         )
         
         present(share, animated: true, completion: nil)
+    }
+    
+    private func setupImageAndScrollView() {
+        guard let image else { return }
+        imageView.image = image
+        imageView.frame.size = image.size
         
+        scrollView.minimumZoomScale = 0.1
+        scrollView.maximumZoomScale = 1.25
+        rescaleAndCenterImageInScrollView(image: image)
+    }
+    
+    private func updateImageViewWithImage() {
+        guard isViewLoaded, let image else { return }
+        imageView.image = image
+        imageView.frame.size = image.size
+        rescaleAndCenterImageInScrollView(image: image)
     }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
@@ -45,6 +52,11 @@ final class SingleImageViewController: UIViewController {
         view.layoutIfNeeded()
         let visibleRectSize = scrollView.bounds.size
         let imageSize = image.size
+        
+        guard imageSize.width > 0, imageSize.height > 0 else {
+            print("Invalid image size \(imageSize)")
+            return
+        }
         
         let hScale = visibleRectSize.width / imageSize.width
         let vScale = visibleRectSize.height / imageSize.height
@@ -72,7 +84,7 @@ final class SingleImageViewController: UIViewController {
 
 extension SingleImageViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return imageView
+        imageView
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
