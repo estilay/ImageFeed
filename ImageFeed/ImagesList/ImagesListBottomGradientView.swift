@@ -23,6 +23,7 @@ final class ImagesListBottomGradientView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupGradient()
     }
     
     required init?(coder: NSCoder) {

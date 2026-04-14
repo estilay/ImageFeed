@@ -3,12 +3,31 @@ import UIKit
 final  class ImagesListViewController: UIViewController {
     @IBOutlet weak private var tableView: UITableView!
     
+    private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let photoNames = (0..<20).map(String.init)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupTableView()
+    }
+    
+    // MARK: - Prepare ShowSingleImage Segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == showSingleImageSegueIdentifier {
+            guard
+                let viewController = segue.destination as? SingleImageViewController,
+                let indexPath = sender as? IndexPath
+            else {
+                print("Invalid segue destination")
+                return
+            }
+            
+            let image = UIImage(named: photoNames[indexPath.row])
+            viewController.image = image
+        } else {
+            super.prepare(for: segue, sender: sender)
+        }
     }
     
     // MARK: - SetupTableView
@@ -38,11 +57,11 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIndetifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
         
         guard let imageListCell = cell as? ImagesListCell else {
-            print("Ошибка приведения ячейки к типу")
-            return UITableViewCell() // возврат пустой ячейки
+            print("Error casting cell to type ImagesListCell")
+            return UITableViewCell()
         }
         
         configCell(for: imageListCell, with: indexPath)
@@ -53,7 +72,7 @@ extension ImagesListViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
