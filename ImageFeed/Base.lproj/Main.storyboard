@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FOc-vt-JQy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="JEv-X7-Qrf">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
@@ -44,6 +44,55 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kci-Wd-680" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-602" y="627"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="hBY-2F-OpF">
+            <objects>
+                <viewController id="JEv-X7-Qrf" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="sZs-a2-6E4">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ysl-hD-isx">
+                                <rect key="frame" x="16" y="646" width="361" height="48"/>
+                                <color key="backgroundColor" name="YP White"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="VrS-z6-YCg"/>
+                                </constraints>
+                                <color key="tintColor" name="YP Black"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Войти">
+                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="17"/>
+                                </buttonConfiguration>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="16"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo_of_Unsplash" translatesAutoresizingMaskIntoConstraints="NO" id="tRo-Gm-8Qt">
+                                <rect key="frame" x="166.66666666666666" y="396" width="60" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="7Sn-Nz-PXk"/>
+                                    <constraint firstAttribute="width" constant="60" id="kx9-Uq-uVI"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="8we-mb-Xi1"/>
+                        <color key="backgroundColor" name="YP Black"/>
+                        <constraints>
+                            <constraint firstItem="8we-mb-Xi1" firstAttribute="bottom" secondItem="Ysl-hD-isx" secondAttribute="bottom" constant="90" id="1mK-Wu-4Vq"/>
+                            <constraint firstItem="Ysl-hD-isx" firstAttribute="leading" secondItem="8we-mb-Xi1" secondAttribute="leading" constant="16" id="4CL-Wi-tDv"/>
+                            <constraint firstItem="tRo-Gm-8Qt" firstAttribute="centerX" secondItem="sZs-a2-6E4" secondAttribute="centerX" id="93U-pa-O4K"/>
+                            <constraint firstItem="8we-mb-Xi1" firstAttribute="trailing" secondItem="Ysl-hD-isx" secondAttribute="trailing" constant="16" id="ad1-ve-oTX"/>
+                            <constraint firstItem="tRo-Gm-8Qt" firstAttribute="centerY" secondItem="sZs-a2-6E4" secondAttribute="centerY" id="mkW-dW-FVu"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Dws-N4-3vF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1636" y="-876"/>
         </scene>
         <!--ImageList-->
         <scene sceneID="tne-QT-ifu">
@@ -228,6 +277,7 @@
     </scenes>
     <resources>
         <image name="0" width="1600" height="1059"/>
+        <image name="Logo_of_Unsplash" width="60" height="60"/>
         <image name="backward_button" width="24" height="24"/>
         <image name="like_button_on" width="44" height="44"/>
         <image name="sharing_button" width="50" height="50"/>
