@@ -5,7 +5,6 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -53,51 +52,17 @@
                     <view key="view" contentMode="scaleToFill" id="sZs-a2-6E4">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ysl-hD-isx">
-                                <rect key="frame" x="16" y="646" width="361" height="48"/>
-                                <color key="backgroundColor" name="YP White"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="48" id="VrS-z6-YCg"/>
-                                </constraints>
-                                <color key="tintColor" name="YP Black"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Войти">
-                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="17"/>
-                                </buttonConfiguration>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="16"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <segue destination="SHB-yn-a6C" kind="show" identifier="ShowWebView" id="Yvo-6E-Kqr"/>
-                                </connections>
-                            </button>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo_of_Unsplash" translatesAutoresizingMaskIntoConstraints="NO" id="tRo-Gm-8Qt">
-                                <rect key="frame" x="166.66666666666666" y="396" width="60" height="60"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="7Sn-Nz-PXk"/>
-                                    <constraint firstAttribute="width" constant="60" id="kx9-Uq-uVI"/>
-                                </constraints>
-                            </imageView>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="8we-mb-Xi1"/>
                         <color key="backgroundColor" name="YP Black"/>
-                        <constraints>
-                            <constraint firstItem="8we-mb-Xi1" firstAttribute="bottom" secondItem="Ysl-hD-isx" secondAttribute="bottom" constant="90" id="1mK-Wu-4Vq"/>
-                            <constraint firstItem="Ysl-hD-isx" firstAttribute="leading" secondItem="8we-mb-Xi1" secondAttribute="leading" constant="16" id="4CL-Wi-tDv"/>
-                            <constraint firstItem="tRo-Gm-8Qt" firstAttribute="centerX" secondItem="sZs-a2-6E4" secondAttribute="centerX" id="93U-pa-O4K"/>
-                            <constraint firstItem="8we-mb-Xi1" firstAttribute="trailing" secondItem="Ysl-hD-isx" secondAttribute="trailing" constant="16" id="ad1-ve-oTX"/>
-                            <constraint firstItem="tRo-Gm-8Qt" firstAttribute="centerY" secondItem="sZs-a2-6E4" secondAttribute="centerY" id="mkW-dW-FVu"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ddm-i6-7z4"/>
+                    <connections>
+                        <segue destination="SHB-yn-a6C" kind="show" identifier="ShowWebView" id="rhE-h8-byk"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Dws-N4-3vF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-710.68702290076328" y="-876.05633802816908"/>
+            <point key="canvasLocation" x="-677" y="-876"/>
         </scene>
         <!--Web View View Controller-->
         <scene sceneID="QXy-aZ-c93">
@@ -106,29 +71,9 @@
                     <view key="view" contentMode="scaleToFill" id="b9I-89-RCH">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PJu-kc-iBL">
-                                <rect key="frame" x="0.0" y="172" width="393" height="680"/>
-                                <color key="backgroundColor" name="YP White"/>
-                                <wkWebViewConfiguration key="configuration">
-                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                    <wkPreferences key="preferences"/>
-                                </wkWebViewConfiguration>
-                            </wkWebView>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="T6t-x3-NzA"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstAttribute="bottom" secondItem="PJu-kc-iBL" secondAttribute="bottom" id="7HB-cX-W8n"/>
-                            <constraint firstAttribute="trailing" secondItem="PJu-kc-iBL" secondAttribute="trailing" id="BcP-gf-EAw"/>
-                            <constraint firstItem="PJu-kc-iBL" firstAttribute="top" secondItem="T6t-x3-NzA" secondAttribute="top" id="LrK-vw-G8Y"/>
-                            <constraint firstItem="PJu-kc-iBL" firstAttribute="leading" secondItem="b9I-89-RCH" secondAttribute="leading" id="oIR-Tu-EtY"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="yhn-eG-oJr"/>
-                    <connections>
-                        <outlet property="webView" destination="PJu-kc-iBL" id="cZg-G8-vJw"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kAN-lv-ygX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -335,7 +280,6 @@
     </scenes>
     <resources>
         <image name="0" width="1600" height="1059"/>
-        <image name="Logo_of_Unsplash" width="60" height="60"/>
         <image name="backward_button" width="24" height="24"/>
         <image name="like_button_on" width="44" height="44"/>
         <image name="sharing_button" width="50" height="50"/>
@@ -347,8 +291,5 @@
         <namedColor name="YP White">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
     </resources>
 </document>

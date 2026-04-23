@@ -2,21 +2,47 @@ import UIKit
 import WebKit
 
 final class WebViewViewController: UIViewController {
-    @IBOutlet private var webView: WKWebView!
-    
+    // MARK: - Properties
+    private lazy var webView: WKWebView = {
+        let webView = WKWebView()
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(webView)
+        
+        return webView
+    }()
+
     weak var delegate: WebViewViewControllerDelegate?
     
     enum WebViewConstants {
         static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
     }
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         loadAuthView()
+        setupUI()
         
         webView.navigationDelegate = self
     }
     
+    // MARK: - UI methods
+    private func setupUI() {
+        view.backgroundColor = .ypWhite
+        createWebViewConstraints()
+    }
+    
+    // MARK: - Setup Constraints
+    private func createWebViewConstraints() {
+        NSLayoutConstraint.activate([
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
+    // MARK: - Private methods
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else { return }
         
@@ -35,7 +61,7 @@ final class WebViewViewController: UIViewController {
         webView.load(request)
     }
 }
-
+// MARK: - WKNavigationDelegate
 extension WebViewViewController: WKNavigationDelegate {
     func webView(
         _ webView: WKWebView,
