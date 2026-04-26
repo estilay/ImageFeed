@@ -68,11 +68,11 @@ final class AuthViewController: UIViewController {
     
     // MARK: - Constraints
     private func setupConstraints() {
-        createUnsplashLogoViewConstraints()
-        createLoginButtonConstraints()
+        setupUnsplashLogoViewConstraints()
+        setupLoginButtonConstraints()
     }
     
-    private func createUnsplashLogoViewConstraints() {
+    private func setupUnsplashLogoViewConstraints() {
         NSLayoutConstraint.activate([
             unsplashLogoView.widthAnchor.constraint(equalToConstant: 60),
             unsplashLogoView.heightAnchor.constraint(equalToConstant: 60),
@@ -81,7 +81,7 @@ final class AuthViewController: UIViewController {
         ])
     }
     
-    private func createLoginButtonConstraints() {
+    private func setupLoginButtonConstraints() {
         NSLayoutConstraint.activate([
             loginButton.heightAnchor.constraint(equalToConstant: 48),
             loginButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
