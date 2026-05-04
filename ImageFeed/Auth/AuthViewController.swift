@@ -1,6 +1,7 @@
 import UIKit
 
 final class AuthViewController: UIViewController {
+    private let oauth2Service = OAuth2Service.shared
     // MARK: - Properties
     private let showWebViewSegueIdentifier = "ShowWebView"
     
@@ -94,7 +95,17 @@ final class AuthViewController: UIViewController {
 // MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        //TODO: process code
+        OAuth2Service.shared.fetchOAuthToken(code) { result in
+            switch result {
+            case .success(let token):
+                print("Token received: \(token)")
+                vc.dismiss(animated: true)
+                
+            case .failure(let error):
+                print("Error: \(error.localizedDescription)")
+                vc.dismiss(animated: true)
+            }
+        }
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
