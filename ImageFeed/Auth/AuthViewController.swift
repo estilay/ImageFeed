@@ -1,9 +1,16 @@
 import UIKit
 
+protocol AuthViewControllerDelegate: AnyObject {
+    func didAuthenticate(_ vc: AuthViewController)
+}
+
+// MARK: - AuthViewController
 final class AuthViewController: UIViewController {
-    private let oauth2Service = OAuth2Service.shared
     // MARK: - Properties
+    private let oauth2Service = OAuth2Service.shared
     private let showWebViewSegueIdentifier = "ShowWebView"
+    
+    weak var delegate: AuthViewControllerDelegate?
     
     private lazy var unsplashLogoView: UIImageView = {
         let unsplashLogoImage = UIImage(named: "Logo_of_Unsplash")
@@ -98,6 +105,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
         OAuth2Service.shared.fetchOAuthToken(code) { result in
             switch result {
             case .success(let token):
+                self.delegate?.didAuthenticate(self)
                 print("Token received: \(token)")
                 vc.dismiss(animated: true)
                 
