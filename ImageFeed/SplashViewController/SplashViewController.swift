@@ -3,13 +3,13 @@ import UIKit
 final class SplashViewController: UIViewController {
     // MARK: - Properties
     private let showAuthViewSegueIdentifier = "ShowAuthView"
-    private let storage = OAuth2TokenStorage()
+    private let storageToken = OAuth2TokenStorage.shared.token
     
     // MARK: - Lifecycle
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if storage.token != nil {
+        if storageToken != nil {
             switchToTabBarController()
         } else {
             performSegue(withIdentifier: showAuthViewSegueIdentifier, sender: nil)

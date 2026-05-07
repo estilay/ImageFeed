@@ -3,8 +3,11 @@ import Foundation
 // MARK: - OAuth2Service
 final class OAuth2Service {
     static let shared = OAuth2Service()
-    private init() {}
+    private init() {
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+    }
     
+    private let decoder = JSONDecoder()
     // MARK: - FetchToken
     func fetchOAuthToken(
         _ code: String,
@@ -61,10 +64,9 @@ final class OAuth2Service {
         completion: @escaping (Result<String, Error>) -> Void
     ) {
         do {
-            let tokenResponse = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data)
+            let tokenResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
             
-            let storage = OAuth2TokenStorage()
-            storage.token = tokenResponse.accessToken
+            OAuth2TokenStorage.shared.token = tokenResponse.accessToken
             
             print("OAuthService: Token successfully received")
             completion(.success(tokenResponse.accessToken))

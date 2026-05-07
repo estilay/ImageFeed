@@ -13,7 +13,7 @@ final class AuthViewController: UIViewController {
     weak var delegate: AuthViewControllerDelegate?
     
     private lazy var unsplashLogoView: UIImageView = {
-        let unsplashLogoImage = UIImage(named: "Logo_of_Unsplash")
+        let unsplashLogoImage = UIImage(resource: .logoOfUnsplash)
         let unsplashLogoView = UIImageView(image: unsplashLogoImage)
         unsplashLogoView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(unsplashLogoView)
