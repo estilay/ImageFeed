@@ -1,4 +1,5 @@
 import UIKit
+import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
@@ -102,13 +103,14 @@ final class AuthViewController: UIViewController {
 // MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        ProgressHUD.animate()
         OAuth2Service.shared.fetchOAuthToken(code) { result in
+            ProgressHUD.dismiss()
             switch result {
             case .success(let token):
                 self.delegate?.didAuthenticate(self)
                 print("Token received: \(token)")
                 vc.dismiss(animated: true)
-                
             case .failure(let error):
                 print("Error: \(error.localizedDescription)")
                 vc.dismiss(animated: true)
