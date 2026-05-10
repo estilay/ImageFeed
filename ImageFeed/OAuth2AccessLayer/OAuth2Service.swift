@@ -3,16 +3,29 @@ import Foundation
 // MARK: - OAuth2Service
 final class OAuth2Service {
     static let shared = OAuth2Service()
+    
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    private let decoder = JSONDecoder()
+    
     private init() {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
     
-    private let decoder = JSONDecoder()
     // MARK: - FetchToken
     func fetchOAuthToken(
         _ code: String,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
+        assert(Thread.isMainThread)
+        guard lastCode != code else {
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
+        
+        task?.cancel()
+        lastCode = code
+        
         guard let request = makeOAuthTokenRequest(code: code) else {
             print("OAuthService: Invalid request - failed to create URLRequest")
             completion(.failure(NetworkError.invalidRequest))
@@ -21,20 +34,26 @@ final class OAuth2Service {
         
         print("OAuthService: Sending token request with code: \(code)")
         let task = URLSession.shared.data(for: request) { result in
-            switch result {
-            case .success(let data):
-                self.decodeToken(data: data, completion: completion)
-            case .failure(let error):
-                completion(.failure(error))
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    self.decodeToken(data: data, completion: completion)
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+                
+                self.task = nil
+                self.lastCode = nil
             }
         }
-        
+        self.task = task
         task.resume()
     }
     
     // MARK: - OAuthTokenRequest
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: "https://unsplash.com/oauth/token") else {
+            assertionFailure("Failure to create URL")
             return nil
         }
         
