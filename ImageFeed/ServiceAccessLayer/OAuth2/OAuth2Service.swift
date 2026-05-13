@@ -3,7 +3,7 @@ import Foundation
 // MARK: - OAuth2Service
 final class OAuth2Service {
     static let shared = OAuth2Service()
-    
+    private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var lastCode: String?
     private let decoder = JSONDecoder()
@@ -33,7 +33,7 @@ final class OAuth2Service {
         }
         
         print("OAuthService: Sending token request with code: \(code)")
-        let task = URLSession.shared.data(for: request) { result in
+        let task = urlSession.data(for: request) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let data):

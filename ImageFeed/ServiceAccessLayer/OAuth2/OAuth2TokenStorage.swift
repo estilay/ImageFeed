@@ -3,7 +3,7 @@ import Foundation
 final class OAuth2TokenStorage {
     // MARK: - Singleton
     static let shared = OAuth2TokenStorage()
-    private init() {}
+    init() {}
     
     // MARK: - Properties
     private let tokenKey = "bearerToken"

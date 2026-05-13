@@ -2,6 +2,10 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     // MARK: - Properties
+    private let profileService = ProfileService.shared
+    private let token = OAuth2TokenStorage.shared.token
+    
+    // MARK: - UI Elements
     private lazy var profileImageView: UIImageView = {
         let profileImage = UIImage(named: "avatar_photo")
         let profileImageView = UIImageView(image: profileImage)
@@ -14,7 +18,7 @@ final class ProfileViewController: UIViewController {
     private lazy var nameLabel: UILabel = {
         let nameLabel = UILabel()
         nameLabel.textColor = .ypWhite
-        nameLabel.text = "Екатерина Новикова"
+        nameLabel.text = "Имя не указано"
         nameLabel.font = UIFont.systemFont(ofSize: 23, weight: .bold)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
@@ -25,7 +29,7 @@ final class ProfileViewController: UIViewController {
     private lazy var loginNameLabel: UILabel = {
         let loginNameLabel = UILabel()
         loginNameLabel.textColor = .ypGray
-        loginNameLabel.text = "@ekaterina_nov"
+        loginNameLabel.text = "@неизвестный_пользователь"
         loginNameLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loginNameLabel)
@@ -36,7 +40,7 @@ final class ProfileViewController: UIViewController {
     private lazy var descriptionLabel: UILabel = {
         let descriptionLabel = UILabel()
         descriptionLabel.textColor = .ypWhite
-        descriptionLabel.text = "Hello, world"
+        descriptionLabel.text = "Профиль не заполнен"
         descriptionLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(descriptionLabel)
@@ -69,16 +73,34 @@ final class ProfileViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
+        updateProfileDetails()
     }
     
-    // MARK: - Setup UI
+    // MARK: - Private Methods
+    private func updateProfileDetails() {
+        if let profile = profileService.profile {
+            nameLabel.text = profile.name
+            loginNameLabel.text = profile.loginName
+            descriptionLabel.text = profile.bio
+        }
+    }
+    // MARK: - Actions
+    // TODO:
+    @objc
+    private func didTapLogoutButton() {
+        
+    }
+}
+
+
+// MARK: - UI Setup
+extension ProfileViewController {
+    // MARK: - Setup UI method
     private func setupUI() {
         view.backgroundColor = .ypBlack
         setupConstraints()
     }
-    
     // MARK: - Setup Constraints
     private func setupConstraints() {
         createProfileImageviewConstraints()
@@ -128,12 +150,5 @@ final class ProfileViewController: UIViewController {
             logoutButton.widthAnchor.constraint(equalToConstant: 44),
             logoutButton.heightAnchor.constraint(equalToConstant: 44)
         ])
-    }
-    
-    // MARK: - Actions
-    // TODO:
-    @objc
-    private func didTapLogoutButton() {
-        
     }
 }

@@ -13,6 +13,7 @@ final class AuthViewController: UIViewController {
     
     weak var delegate: AuthViewControllerDelegate?
     
+    // MARK: - UI Elements
     private lazy var unsplashLogoView: UIImageView = {
         let unsplashLogoImage = UIImage(resource: .logoOfUnsplash)
         let unsplashLogoView = UIImageView(image: unsplashLogoImage)
@@ -126,4 +127,13 @@ extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         vc.dismiss(animated: true)
     }
+}
+
+// MARK: - UI Elements
+extension AuthViewController {
+    
+}
+
+extension AuthViewController {
+    
 }
