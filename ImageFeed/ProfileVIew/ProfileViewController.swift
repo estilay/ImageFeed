@@ -7,7 +7,7 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - UI Elements
     private lazy var profileImageView: UIImageView = {
-        let profileImage = UIImage(named: "avatar_photo")
+        let profileImage = UIImage(resource: .avatarPhoto)
         let profileImageView = UIImageView(image: profileImage)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
