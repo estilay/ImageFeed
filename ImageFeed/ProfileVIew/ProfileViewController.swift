@@ -4,6 +4,7 @@ final class ProfileViewController: UIViewController {
     // MARK: - Properties
     private let profileService = ProfileService.shared
     private let token = OAuth2TokenStorage.shared.token
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     // MARK: - UI Elements
     private lazy var profileImageView: UIImageView = {
@@ -75,6 +76,17 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         updateProfileDetails()
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
     }
     
     // MARK: - Private Methods
@@ -84,6 +96,14 @@ final class ProfileViewController: UIViewController {
             loginNameLabel.text = profile.loginName
             descriptionLabel.text = profile.bio
         }
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        // TODO: Kingfisher
     }
     // MARK: - Actions
     // TODO:

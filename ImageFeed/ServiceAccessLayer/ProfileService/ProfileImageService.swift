@@ -11,6 +11,8 @@ struct ProfileImage: Codable {
 }
 
 final class ProfileImageService {
+    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
+    
     static let shared = ProfileImageService()
     private let urlSession = URLSession.shared
     private let decoder = JSONDecoder()
@@ -45,8 +47,18 @@ final class ProfileImageService {
                     
                     self.avatarURL = userResult.profileImage.small
                     completion(.success(userResult.profileImage.small))
+                    
+                    // NotificationCenter
+                    NotificationCenter.default
+                        .post(
+                            name: ProfileImageService.didChangeNotification,
+                            object: self,
+                            userInfo: ["URL": userResult.profileImage.small]
+                        )
+                    
                 } catch {
-                    print(error)
+                    print(print("[fetchProfileImageURL]: Ошибка декодирования: \(error.localizedDescription)"))
+                    completion(.failure(error))
                 }
             case .failure(let error):
                 print("[fetchProfileImageURL]: Ошибка запроса: \(error.localizedDescription)")
