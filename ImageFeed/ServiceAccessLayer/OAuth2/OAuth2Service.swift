@@ -1,12 +1,29 @@
 import Foundation
 
+enum AuthServiceError: Error {
+    case invalidRequest
+}
 // MARK: - OAuth2Service
 final class OAuth2Service {
     static let shared = OAuth2Service()
+    
+    private let dataStorage = OAuth2TokenStorage.shared
     private let urlSession = URLSession.shared
+    
     private var task: URLSessionTask?
+    
     private var lastCode: String?
-    private let decoder = JSONDecoder()
+    
+    private(set) var authToken: String? {
+        get {
+            return dataStorage.token
+        }
+        set {
+            dataStorage.token = newValue
+        }
+    }
+    
+    let decoder = JSONDecoder()
     
     private init() {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -33,17 +50,28 @@ final class OAuth2Service {
         }
         
         print("OAuthService: Sending token request with code: \(code)")
-        let task = urlSession.data(for: request) { result in
+        
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             DispatchQueue.main.async {
-                switch result {
-                case .success(let data):
-                    self.decodeToken(data: data, completion: completion)
-                case .failure(let error):
-                    completion(.failure(error))
-                }
+                UIBlockingProgressHud.dismiss()
+                guard let self = self else { return }
                 
-                self.task = nil
-                self.lastCode = nil
+                switch result {
+                case .success(let body):
+                    let authToken = body.accessToken
+                    self.authToken = authToken
+                    completion(.success(authToken))
+                    
+                    self.task = nil
+                    self.lastCode = nil
+                    
+                case .failure(let error):
+                    print("[fetchOAuthToken]: Error: \(error.localizedDescription)")
+                    completion(.failure(error))
+                    
+                    self.task = nil
+                    self.lastCode = nil
+                }
             }
         }
         self.task = task
@@ -76,23 +104,29 @@ final class OAuth2Service {
         
         return request
     }
-    
-    // MARK: - Decoding
-    private func decodeToken(
-        data: Data,
-        completion: @escaping (Result<String, Error>) -> Void
-    ) {
-        do {
-            let tokenResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-            
-            OAuth2TokenStorage.shared.token = tokenResponse.accessToken
-            
-            print("OAuthService: Token successfully received")
-            completion(.success(tokenResponse.accessToken))
-            
-        } catch {
-            print("OAuthService: Decoding error: \(error.localizedDescription)")
-            completion(.failure(NetworkError.decodingError(error)))
+}
+
+// MARK: - Network Client
+
+extension OAuth2Service {
+    private func object(for request: URLRequest, completion: @escaping (Result<OAuthTokenResponseBody, Error>) -> Void) -> URLSessionTask {
+        
+        return urlSession.data(for: request) { (result: Result<Data, Error>) in
+            switch result {
+            case .success(let data):
+                do {
+                    print("OAuthService: Token successfully received")
+                    let body = try self.decoder.decode(OAuthTokenResponseBody.self, from: data)
+                    completion(.success(body))
+                }
+                catch {
+                    print("OAuthService: Decoding error: \(error.localizedDescription)")
+                    completion(.failure(NetworkError.decodingError(error)))
+                }
+                
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
     }
 }

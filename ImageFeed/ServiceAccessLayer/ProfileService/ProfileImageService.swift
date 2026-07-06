@@ -11,20 +11,22 @@ struct ProfileImage: Codable {
 }
 
 final class ProfileImageService {
-    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
-    
+    // Singleton
     static let shared = ProfileImageService()
-    private let urlSession = URLSession.shared
-    private let decoder = JSONDecoder()
+    
+    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     private(set) var avatarURL: String?
     
+    private let urlSession = URLSession.shared
     private var task: URLSessionTask?
+    
+    private let decoder = JSONDecoder()
     
     private init() {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
     
-    func fetchProfileURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
+    func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         task?.cancel()
         
         guard let token = OAuth2TokenStorage.shared.token else {
@@ -37,34 +39,27 @@ final class ProfileImageService {
             return
         }
         
-        let task = urlSession.data(for: request) { [weak self] result in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             switch result {
-            case .success(let data):
+            case .success(let result):
                 guard let self else { return }
                 
-                do {
-                    let userResult = try decoder.decode(UserResult.self, from: data)
-                    
-                    self.avatarURL = userResult.profileImage.small
-                    completion(.success(userResult.profileImage.small))
+                    self.avatarURL = result.profileImage.small
+                    completion(.success(result.profileImage.small))
                     
                     // NotificationCenter
                     NotificationCenter.default
                         .post(
                             name: ProfileImageService.didChangeNotification,
                             object: self,
-                            userInfo: ["URL": userResult.profileImage.small]
+                            userInfo: ["URL": result.profileImage.small]
                         )
-                    
-                } catch {
-                    print(print("[fetchProfileImageURL]: Ошибка декодирования: \(error.localizedDescription)"))
-                    completion(.failure(error))
-                }
+                
             case .failure(let error):
-                print("[fetchProfileImageURL]: Ошибка запроса: \(error.localizedDescription)")
+                print("[fetchProfileImageURL]: Request Error: \(error.localizedDescription)")
                 completion(.failure(error))
+                }
             }
-        }
         
         self.task = task
         task.resume()

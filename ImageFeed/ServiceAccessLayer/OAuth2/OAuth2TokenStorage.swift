@@ -3,10 +3,11 @@ import Foundation
 final class OAuth2TokenStorage {
     // MARK: - Singleton
     static let shared = OAuth2TokenStorage()
-    init() {}
+    private init() {}
     
     // MARK: - Properties
     private let tokenKey = "bearerToken"
+    private let dataStorage = UserDefaults.standard
     
     var token: String? {
         get {
@@ -14,7 +15,11 @@ final class OAuth2TokenStorage {
         }
         
         set {
-            UserDefaults.standard.set(newValue, forKey: tokenKey)
+            if let token = newValue {
+                dataStorage.set(token, forKey: tokenKey)
+            } else {
+                dataStorage.removeObject(forKey: tokenKey)
+            }
         }
     }
 }

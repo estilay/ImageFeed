@@ -11,17 +11,19 @@ struct ProfileResult: Codable {
     let username: String
     let firstName: String
     let lastName: String
-    let bio: String
+    let bio: String?
 }
 
 
 final class ProfileService {
     static let shared = ProfileService()
-    private let decoder = JSONDecoder()
+    
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     
     private(set) var profile: Profile?
+    
+    private let decoder = JSONDecoder()
     
     private init() {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -35,30 +37,25 @@ final class ProfileService {
             return
         }
         
-        let task = urlSession.data(for: request) { [weak self] result in
-            guard let self = self else { return }
-            
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             switch result {
-            case . success(let data):
-                do {
-                    let profileResult = try decoder.decode(ProfileResult.self, from: data)
-                    
-                    let profile = Profile(
-                        username: profileResult.username,
-                        name: profileResult.firstName + " " + profileResult.lastName,
-                        loginName: "@\(profileResult.username)",
-                        bio: profileResult.bio
-                    )
-                    self.profile = profile
-                    completion(.success(profile))
-                } catch {
-                    completion(.failure(error))
-                }
+            case .success(let result):
+                let profile = Profile(
+                    username: result.username,
+                    name: "\(result.firstName) \(result.lastName)"
+                        .trimmingCharacters(in: .whitespaces),
+                    loginName: "@\(result.username)",
+                    bio: result.bio
+                )
+                
+                self?.profile = profile
+                completion(.success(profile))
                 
             case .failure(let error):
+                print("[fetchProfile]: Request error: \(error.localizedDescription)")
                 completion(.failure(error))
             }
-            self.task = nil
+            self?.task = nil
         }
         
         self.task = task
