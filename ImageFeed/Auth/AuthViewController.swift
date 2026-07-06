@@ -108,9 +108,11 @@ extension AuthViewController: WebViewViewControllerDelegate {
         
         UIBlockingProgressHud.show()
         
-        OAuth2Service.shared.fetchOAuthToken(code) { result in
+        fetchOAuthToken(code) { [weak self] result in
             
             UIBlockingProgressHud.dismiss()
+            
+            guard let self else { return }
             
             switch result {
             case .success(let token):
@@ -129,11 +131,23 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
 }
 
-// MARK: - UI Elements
 extension AuthViewController {
-    
+    private func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        oauth2Service.fetchOAuthToken(code) { result in
+            completion(result)
+        }
+    }
 }
 
 extension AuthViewController {
-    
+    func showAuthErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
 }
