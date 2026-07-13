@@ -2,35 +2,44 @@ import UIKit
 
 final class SplashViewController: UIViewController {
     // MARK: - Properties
-    private let showAuthViewSegueIdentifier = "ShowAuthView"
     private let storageToken = OAuth2TokenStorage.shared.token
+    private let profileService = ProfileService.shared
+    private let profileImageService = ProfileImageService.shared
+    private let storage = OAuth2TokenStorage.shared
+    
+    private lazy var splashImageView: UIImageView = {
+        let splashImage = UIImage(resource: .splashScreenLogo)
+        let splashImageView = UIImageView(image: splashImage)
+        splashImageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(splashImageView)
+        
+        return splashImageView
+    }()
     
     // MARK: - Lifecycle
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        setupUI()
         
-        if storageToken != nil {
-            switchToTabBarController()
+        if let token = storage.token {
+            fetchProfile(token: token)
         } else {
-            performSegue(withIdentifier: showAuthViewSegueIdentifier, sender: nil)
+            presentAuthViewController()
         }
     }
     
     // MARK: - Methods
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showAuthViewSegueIdentifier {
-            guard
-                let navigationController = segue.destination as? UINavigationController,
-                let viewController = navigationController.viewControllers.first as? AuthViewController
-            else {
-                assertionFailure("Failed to prepare for \(showAuthViewSegueIdentifier)")
-                return
-            }
-            
-            viewController.delegate = self
-        } else {
-            super.prepare(for: segue, sender: sender)
+    private func presentAuthViewController() {
+        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+        
+        guard let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else {
+            assertionFailure("Invalid AuthViewController ID")
+            return
         }
+        
+        authViewController.delegate = self
+        authViewController.modalPresentationStyle = .fullScreen
+        present(authViewController, animated: true)
     }
     
     private func switchToTabBarController() {
@@ -39,12 +48,35 @@ final class SplashViewController: UIViewController {
             .flatMap{ $0.windows }
             .first{ $0.isKeyWindow }
         
-        guard let window else { return }
+        guard let window else {
+            assertionFailure("Invalid window configuration")
+            return
+        }
         
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
             .instantiateViewController(withIdentifier: "TabBarViewController")
         
         window.rootViewController = tabBarController
+    }
+    
+    private func fetchProfile(token: String) {
+        UIBlockingProgressHud.show()
+        
+        profileService.fetchProfile(token) { [weak self] result in
+            UIBlockingProgressHud.dismiss()
+            
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let profile):
+                profileImageService.fetchProfileImageURL(username: profile.username) { _ in
+                    }
+                self.switchToTabBarController()
+            case .failure(let error):
+                print(error)
+                break
+            }
+        }
     }
 }
 
@@ -54,5 +86,20 @@ extension SplashViewController: AuthViewControllerDelegate {
         vc.dismiss(animated: true)
         
         switchToTabBarController()
+    }
+}
+
+// MARK: - UI setup
+extension SplashViewController {
+    private func setupUI() {
+        view.backgroundColor = .ypBlack
+        setupConstraints()
+    }
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            splashImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            splashImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
     }
 }

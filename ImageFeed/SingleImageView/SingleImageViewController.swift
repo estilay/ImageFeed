@@ -82,6 +82,7 @@ final class SingleImageViewController: UIViewController {
     
 }
 
+
 extension SingleImageViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         imageView
@@ -90,6 +91,7 @@ extension SingleImageViewController: UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         updateContentInsetForCentering()
     }
+    
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
         updateContentInsetForCentering()
     }

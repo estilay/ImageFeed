@@ -1,4 +1,5 @@
 import UIKit
+import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
@@ -7,11 +8,12 @@ protocol AuthViewControllerDelegate: AnyObject {
 // MARK: - AuthViewController
 final class AuthViewController: UIViewController {
     // MARK: - Properties
-    private let oauth2Service = OAuth2Service.shared
+    private let authService = OAuth2Service.shared
     private let showWebViewSegueIdentifier = "ShowWebView"
     
     weak var delegate: AuthViewControllerDelegate?
     
+    // MARK: - UI Elements
     private lazy var unsplashLogoView: UIImageView = {
         let unsplashLogoImage = UIImage(resource: .logoOfUnsplash)
         let unsplashLogoView = UIImageView(image: unsplashLogoImage)
@@ -49,15 +51,17 @@ final class AuthViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showWebViewSegueIdentifier {
-            guard let webViewViewController = segue.destination as? WebViewViewController else {
-                print("Failed to prepare \(showWebViewSegueIdentifier)")
-                return
-            }
-            webViewViewController.delegate = self
-        } else {
+        guard segue.identifier == showWebViewSegueIdentifier else {
             super.prepare(for: segue, sender: sender)
+            return
+            }
+        
+        guard let webViewViewController = segue.destination as? WebViewViewController else {
+            assertionFailure("Failed to prepare \(showWebViewSegueIdentifier)")
+            return
         }
+        
+            webViewViewController.delegate = self
     }
     
     // MARK: - UI Methods
@@ -102,13 +106,21 @@ final class AuthViewController: UIViewController {
 // MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        OAuth2Service.shared.fetchOAuthToken(code) { result in
+        vc.dismiss(animated: true)
+        
+        UIBlockingProgressHud.show()
+        
+        fetchOAuthToken(code) { [weak self] result in
+            
+            UIBlockingProgressHud.dismiss()
+            
+            guard let self else { return }
+            
             switch result {
             case .success(let token):
                 self.delegate?.didAuthenticate(self)
                 print("Token received: \(token)")
                 vc.dismiss(animated: true)
-                
             case .failure(let error):
                 print("Error: \(error.localizedDescription)")
                 vc.dismiss(animated: true)
@@ -118,5 +130,27 @@ extension AuthViewController: WebViewViewControllerDelegate {
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         vc.dismiss(animated: true)
+    }
+}
+
+extension AuthViewController {
+    private func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        authService.fetchOAuthToken(code) { result in
+            print("Auth Request completed")
+            completion(result)
+        }
+    }
+}
+
+extension AuthViewController {
+    func showAuthErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        let dismissAlertAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alertController.addAction(dismissAlertAction)
+        present(alertController, animated: true, completion: nil)
     }
 }
