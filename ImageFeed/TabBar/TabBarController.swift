@@ -2,9 +2,12 @@ import UIKit
 
 final class TabBarController: UITabBarController {
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupViewControllers()
+    }
+    
+    private func setupViewControllers() {
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         
         let imagesListViewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController")
@@ -17,6 +20,6 @@ final class TabBarController: UITabBarController {
         )
         
         
-        self.viewControllers = [imagesListViewController, profileViewController]
+        viewControllers = [imagesListViewController, profileViewController]
     }
 }

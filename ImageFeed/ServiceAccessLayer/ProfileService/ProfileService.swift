@@ -10,7 +10,7 @@ struct Profile {
 struct ProfileResult: Codable {
     let username: String
     let firstName: String
-    let lastName: String
+    let lastName: String?
     let bio: String?
 }
 
@@ -33,6 +33,7 @@ final class ProfileService {
         task?.cancel()
         
         guard let request = makeProfileRequest(token: token) else {
+            print("[ProfileService.fetchProfile]: Invalid URL request for profile data")
             completion(.failure(URLError(.badURL)))
             return
         }
@@ -42,7 +43,7 @@ final class ProfileService {
             case .success(let result):
                 let profile = Profile(
                     username: result.username,
-                    name: "\(result.firstName) \(result.lastName)"
+                    name: "\(result.firstName) \(result.lastName ?? "")"
                         .trimmingCharacters(in: .whitespaces),
                     loginName: "@\(result.username)",
                     bio: result.bio
@@ -52,7 +53,7 @@ final class ProfileService {
                 completion(.success(profile))
                 
             case .failure(let error):
-                print("[fetchProfile]: Request error: \(error.localizedDescription)")
+                print("[ProfileService.fetchProfile]: Request error: \(error.localizedDescription)")
                 completion(.failure(error))
             }
             self?.task = nil

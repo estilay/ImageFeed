@@ -1,15 +1,5 @@
 import Foundation
 
-struct UserResult: Codable {
-    let profileImage: ProfileImage
-}
-
-struct ProfileImage: Codable {
-    let small: String
-    let medium: String
-    let large: String
-}
-
 final class ProfileImageService {
     // Singleton
     static let shared = ProfileImageService()
@@ -30,11 +20,13 @@ final class ProfileImageService {
         task?.cancel()
         
         guard let token = OAuth2TokenStorage.shared.token else {
+            print("[ProfileImageService.fetchProfileImageURL]: Token is nil. Skipping profile image request.")
             completion(.failure(NSError(domain: "ProfileImageService", code: 401, userInfo: [NSLocalizedDescriptionKey: "Authorization token missing"])))
             return
         }
         
         guard let request = makeProfileImageRequest(username: username, token: token) else {
+            print("[ProfileImageService].fetchProfileImageURL: Invalid request for username: \(username)")
             completion(.failure(URLError(.badURL)))
             return
         }
@@ -56,7 +48,7 @@ final class ProfileImageService {
                         )
                 
             case .failure(let error):
-                print("[fetchProfileImageURL]: Request Error: \(error.localizedDescription)")
+                print("[ProfileImageService.fetchProfileImageURL]: Request Error: \(error.localizedDescription)")
                 completion(.failure(error))
                 }
             }

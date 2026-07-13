@@ -25,15 +25,15 @@ extension URLSession {
                     fulfillCompletionOnTheMainThread(.success(data))
                 } else {
                     if let errorBody = String(data: data, encoding: .utf8) {
-                        print("URLSession: HTTP status code \(statusCode), error: \(errorBody)")
+                        print("[URLSession.data]: HTTP status code \(statusCode), error: \(errorBody)")
                     }
                     fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
                 }
             } else if let error = error {
-                print("URLSession: URL request error: \(error)")
+                print("[URLSession.data]: URL request error: \(error)")
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
             } else {
-                print("URLSession: URL session error")
+                print("[URLSession.data]: URL session error")
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
             }
         })
@@ -55,19 +55,19 @@ extension URLSession {
             switch result {
             case .success(let data):
                 if let jsonString = String(data: data, encoding: .utf8) {
-                    print("Recieved json Data: \(jsonString)")
+                    print("[URLSession.objectTask]: Recieved json Data \(jsonString)")
                 }
                 do {
                     let decodedObject = try decoder.decode(T.self, from: data)
                     completion(.success(decodedObject))
                 } catch {
                     if let decodingError = error as? DecodingError {
-                        print("Decode error: \(decodingError) for data: \(String(data: data, encoding: .utf8) ?? " ")")
+                        print("[URLSession.objectTask]: Decode error \(decodingError) for data: \(String(data: data, encoding: .utf8) ?? " ")")
                     }
                     completion(.failure(error))
                 }
             case .failure(let error):
-                print("Request Error: \(error.localizedDescription)")
+                print("[URLSession.objectTask]: Request Erro \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }

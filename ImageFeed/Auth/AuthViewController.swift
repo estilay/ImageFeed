@@ -8,7 +8,7 @@ protocol AuthViewControllerDelegate: AnyObject {
 // MARK: - AuthViewController
 final class AuthViewController: UIViewController {
     // MARK: - Properties
-    private let oauth2Service = OAuth2Service.shared
+    private let authService = OAuth2Service.shared
     private let showWebViewSegueIdentifier = "ShowWebView"
     
     weak var delegate: AuthViewControllerDelegate?
@@ -51,15 +51,17 @@ final class AuthViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showWebViewSegueIdentifier {
-            guard let webViewViewController = segue.destination as? WebViewViewController else {
-                print("Failed to prepare \(showWebViewSegueIdentifier)")
-                return
-            }
-            webViewViewController.delegate = self
-        } else {
+        guard segue.identifier == showWebViewSegueIdentifier else {
             super.prepare(for: segue, sender: sender)
+            return
+            }
+        
+        guard let webViewViewController = segue.destination as? WebViewViewController else {
+            assertionFailure("Failed to prepare \(showWebViewSegueIdentifier)")
+            return
         }
+        
+            webViewViewController.delegate = self
     }
     
     // MARK: - UI Methods
@@ -133,7 +135,8 @@ extension AuthViewController: WebViewViewControllerDelegate {
 
 extension AuthViewController {
     private func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        oauth2Service.fetchOAuthToken(code) { result in
+        authService.fetchOAuthToken(code) { result in
+            print("Auth Request completed")
             completion(result)
         }
     }
@@ -146,8 +149,8 @@ extension AuthViewController {
             message: "Не удалось войти в систему",
             preferredStyle: .alert
         )
-        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
-        alertController.addAction(okAction)
+        let dismissAlertAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alertController.addAction(dismissAlertAction)
         present(alertController, animated: true, completion: nil)
     }
 }
