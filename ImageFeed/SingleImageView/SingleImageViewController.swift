@@ -1,6 +1,9 @@
 import UIKit
+import Kingfisher
 
 final class SingleImageViewController: UIViewController {
+    var imageURL: String?
+    
     var image: UIImage? {
         didSet {
             updateImageViewWithImage()
@@ -13,6 +16,7 @@ final class SingleImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        loadImage()
         setupImageAndScrollView()
     }
     
@@ -29,6 +33,30 @@ final class SingleImageViewController: UIViewController {
         present(share, animated: true, completion: nil)
     }
     
+    private func loadImage() {
+        guard let urlString = imageURL,
+              let url = URL(string: urlString) else {
+            imageView.image = UIImage(resource: .stub)
+            return
+        }
+        
+        imageView.kf.indicatorType = .activity
+        imageView.kf.setImage(
+            with: url,
+            placeholder: UIImage(resource: .stub),
+            options: [
+                .cacheOriginalImage
+            ]
+        ) { [weak self] result in
+            switch result {
+            case .success(let value):
+                self?.image = value.image
+                self?.setupImageAndScrollView()
+            case .failure(let error):
+                print("Failed to load image: \(error)")
+            }
+        }
+    }
     private func setupImageAndScrollView() {
         guard let image else { return }
         imageView.image = image
@@ -96,3 +124,4 @@ extension SingleImageViewController: UIScrollViewDelegate {
         updateContentInsetForCentering()
     }
 }
+

@@ -23,12 +23,6 @@ final class ProfileService {
     
     private(set) var profile: Profile?
     
-    private let decoder = JSONDecoder()
-    
-    private init() {
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-    }
-    
     func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         task?.cancel()
         
