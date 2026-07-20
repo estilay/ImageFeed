@@ -19,6 +19,15 @@ struct UrlsResult: Codable {
     let thumb: String
 }
 
+struct LikeResponse: Codable {
+    let photo: LikePhotoResponse
+}
+
+struct LikePhotoResponse: Codable {
+    let id: String
+    let likedByUser: Bool
+}
+
 // MARK: - ImagesListService
 final class ImagesListService {
     private(set) var photos: [Photo] = []
@@ -64,7 +73,7 @@ final class ImagesListService {
         if let token = OAuth2TokenStorage.shared.token {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         } else {
-            print("[ImagesListService.fetchPhotosNexPage]: No token avaible - user not authorized")
+            print("[ImagesListService.fetchPhotosNexPage]: No token available - user not authorized")
             isFetching = false
             lastPageRequested = nil
             return
@@ -117,6 +126,76 @@ final class ImagesListService {
                     } else {
                         print("[ImagesListService.fetchPhotosNextPage]: Error fetching photos: \(error.localizedDescription)")
                     }
+                }
+            }
+        }
+        self.task = task
+        task.resume()
+    }
+    
+    // MARK: - Change Like
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let token = OAuth2TokenStorage.shared.token else {
+            print("[ImagesListService.changeLike]: No token avaible - user not authorized")
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
+        
+        guard let url = URL(string: "https://api.unsplash.com/photos/\(photoId)/like") else {
+            print("[ImagesListService.changeLike]: Invalid URL")
+            completion(.failure(NetworkError.invalidRequest))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = isLike ? "POST" : "DELETE"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let requestID = UUID()
+        activeRequest = requestID
+        
+        print("[ImagesListService.changeLike]: \(isLike ? "Liking" : "Unliking") photo \(photoId) with request \(requestID)")
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<LikeResponse, Error>) in
+            guard let self = self else { return }
+            
+            guard requestID  == self.activeRequest else {
+                print("[ImagesListService.changeLike]: Ignoring old response for request ID: \(requestID)")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.activeRequest = nil
+                self.task = nil
+                
+                switch result {
+                case .success(let response):
+                    if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+                        let oldPhoto = self.photos[index]
+                        self.photos[index] = Photo(
+                            id: oldPhoto.id,
+                            size: oldPhoto.size,
+                            createdAt: oldPhoto.createdAt,
+                            welcomeDescription: oldPhoto.welcomeDescription,
+                            thumbImageURL: oldPhoto.thumbImageURL,
+                            largeImageURL: oldPhoto.largeImageURL,
+                            isLiked: response.photo.likedByUser
+                        )
+                        
+                        NotificationCenter.default.post(
+                            name: ImagesListService.didChangeNotification,
+                            object: self
+                        )
+                        print("ImagesListService.changeLike]: Successfully \(isLike ? "liked" : "unliked") photo \(photoId)")
+                    }
+                    completion(.success(()))
+                    
+                case .failure(let error):
+                    if let urlError = error as? URLError, urlError.code == .cancelled {
+                        print("[ImagesListService.changeLike]: Task wa cancelled for request ID: \(requestID)")
+                    } else {
+                        print("[ImagesListService.changeLike]: Error changing like: \(error.localizedDescription)")
+                    }
+                    completion(.failure(error))
                 }
             }
         }
