@@ -73,7 +73,7 @@ final class ImagesListService {
         if let token = OAuth2TokenStorage.shared.token {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         } else {
-            print("[ImagesListService.fetchPhotosNexPage]: No token available - user not authorized")
+            print("[ImagesListService.fetchPhotosNextPage]: No token available - user not authorized")
             isFetching = false
             lastPageRequested = nil
             return

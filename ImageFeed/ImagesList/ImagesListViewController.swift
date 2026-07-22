@@ -25,7 +25,7 @@ final  class ImagesListViewController: UIViewController {
             NotificationCenter.default.removeObserver(observer)
         }
     }
-    
+        
     // MARK: - Setup Notification Observer
     private func setupNotificationObserver() {
            observer = NotificationCenter.default.addObserver(
@@ -43,7 +43,7 @@ final  class ImagesListViewController: UIViewController {
                 let viewController = segue.destination as? SingleImageViewController,
                 let indexPath = sender as? IndexPath
             else {
-                print("Invalid segue destination")
+                print("[ImagesListViewController]: Invalid segue destination")
                 return
             }
             
@@ -54,7 +54,7 @@ final  class ImagesListViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
-    
+
     private func updateTableViewAnimated() {
         let oldCount = photos.count
         let newCount = imagesListService.photos.count
@@ -86,6 +86,9 @@ final  class ImagesListViewController: UIViewController {
     // MARK: - Cell Configuration
     private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         let photo = photos[indexPath.row]
+        
+        cell.delegate = self
+        
         // Image config
         if let url = URL(string: photo.thumbImageURL) {
             cell.cellImage.kf.indicatorType = .activity
@@ -112,11 +115,59 @@ final  class ImagesListViewController: UIViewController {
         }
 
         // Like config
-        let isLiked = indexPath.row % 2 == 0
-        let likeImage = isLiked ? UIImage(resource: .likeButtonOn) : UIImage(resource: .likeButtonOff)
-        cell.likeButton.setImage(likeImage, for: .normal)
+        cell.setIsLiked(photo.isLiked)
+        
         // Date config
         cell.dateLabel.text = photo.createdAt?.formattedDate ?? "Unknown date"
+    }
+}
+
+// MARK: - ImagesListCellDelegate
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            print("[ImagesListViewController]: Could not get indexPath for cell")
+            return
+        }
+        
+        let photo = photos[indexPath.row]
+        let newLikeStatus = !photo.isLiked
+        print("[ImagesListViewController]: \(newLikeStatus ? "Liking" : "Unliking") photo \(photo.id)")
+        
+        cell.setIsLiked(newLikeStatus)
+        
+        UIBlockingProgressHud.show()
+        imagesListService.changeLike(photoId: photo.id, isLike: newLikeStatus) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                UIBlockingProgressHud.dismiss()
+                switch result {
+                case .success:
+                    self.photos = self.imagesListService.photos
+                    let updatedPhoto = self.photos[indexPath.row]
+                    cell.setIsLiked(updatedPhoto.isLiked)
+                    
+                case .failure(let error):
+                    print("[ImagesListViewController]: Failed to change like status: \(error.localizedDescription)")
+                    
+                    // Reject changes for Like Status
+                    cell.setIsLiked(photo.isLiked)
+                    
+                    self.showLikeErrorAlert()
+                }
+            }
+        }
+    }
+    
+    func showLikeErrorAlert() {
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: "Не удалось изменить статус лайка. Попробуйте еще раз",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 
@@ -127,15 +178,13 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
-        
-        guard let imageListCell = cell as? ImagesListCell else {
-            print("Error casting cell to type ImagesListCell")
+       guard let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as? ImagesListCell else {
+            print("[ImagesListViewController] Error casting cell to type ImagesListCell")
             return UITableViewCell()
         }
         
-        configCell(for: imageListCell, with: indexPath)
-        return imageListCell
+        configCell(for: cell, with: indexPath)
+        return cell
     }
 }
 
@@ -146,7 +195,6 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-
         let photo = photos[indexPath.row]
         let imageSize = photo.size
         
@@ -160,7 +208,7 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row == photos.count - 1 {
-            print("Loading next page (row: \(indexPath.row), total: \(photos.count))")
+            print("[ImagesListViewController]: Loading next page (row: \(indexPath.row), total: \(photos.count))")
             imagesListService.fetchPhotosNextPage()
         }
     }
