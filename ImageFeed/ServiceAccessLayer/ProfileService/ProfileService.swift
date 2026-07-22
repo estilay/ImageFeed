@@ -14,8 +14,9 @@ struct ProfileResult: Codable {
     let bio: String?
 }
 
-
+// MARK: - ProfileService
 final class ProfileService {
+    // MARK: - Properties
     static let shared = ProfileService()
     
     private let urlSession = URLSession.shared
@@ -23,6 +24,7 @@ final class ProfileService {
     
     private(set) var profile: Profile?
     
+    // MARK: - fetchProfile
     func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         task?.cancel()
         
@@ -66,5 +68,11 @@ final class ProfileService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
+    }
+    
+    // MARK: - Public Methods
+    func clearProfile() {
+        profile = nil
+        print("[ProfileService]: Profile cleared")
     }
 }

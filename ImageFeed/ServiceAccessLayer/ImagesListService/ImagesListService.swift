@@ -30,6 +30,7 @@ struct LikePhotoResponse: Codable {
 
 // MARK: - ImagesListService
 final class ImagesListService {
+    static let shared = ImagesListService()
     private(set) var photos: [Photo] = []
     
     private var lastLoadedPage: Int?
@@ -201,5 +202,19 @@ final class ImagesListService {
         }
         self.task = task
         task.resume()
+    }
+    
+    // MARK: - Public methods
+    func clearPhotos() {
+        task?.cancel()
+        task = nil
+        activeRequest = nil
+        
+        photos = []
+        lastLoadedPage = nil
+        lastPageRequested = nil
+        isFetching = false
+        
+        print("[ImagesListService]: All photos cleared")
     }
 }

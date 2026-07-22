@@ -1,6 +1,8 @@
 import Foundation
 
+// MARK: - PriofileImageService
 final class ProfileImageService {
+    // MARK: - Properties
     // Singleton
     static let shared = ProfileImageService()
     
@@ -16,6 +18,7 @@ final class ProfileImageService {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
     
+    // MARK: - fetchProfileImageURL
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         task?.cancel()
         
@@ -66,5 +69,11 @@ final class ProfileImageService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
+    }
+    
+    // MARK: - Public Methods
+    func clearAvatar() {
+        avatarURL = nil
+        print("[ProfileImageService]: Avatar URL cleared")
     }
 }
