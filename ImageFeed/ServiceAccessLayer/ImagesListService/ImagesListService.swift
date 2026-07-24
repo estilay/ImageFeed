@@ -7,7 +7,7 @@ struct PhotoResult: Codable {
     let updatedAt: Date
     let width: Int
     let height: Int
-    let blurHash: String
+    let blurHash: String?
     let likes: Int
     let likedByUser: Bool
     let description: String?
@@ -122,10 +122,13 @@ final class ImagesListService {
                     )
                     
                 case .failure(let error):
-                    if let urlError = error as? URLError, urlError.code == .cancelled {
-                        print("[ImagesListService.fetchPhotosNextPage]: Task was cancelled for request ID: \(requestID)")
-                    } else {
-                        print("[ImagesListService.fetchPhotosNextPage]: Error fetching photos: \(error.localizedDescription)")
+                    print("[ImagesListService.fetchPhotosNextPage]: ERROR for page \(nextPage): \(error)")
+                    if let urlError = error as? URLError {
+                        print("[ImagesListService.fetchPhotosNextPage]: URLError code: \(urlError.code.rawValue)")
+                        print("[ImagesListService.fetchPhotosNextPage]: URLError description: \(urlError.localizedDescription)")
+                    }
+                    if let decodingError = error as? DecodingError {
+                        print("[ImagesListService.fetchPhotosNextPage]: DecodingError: \(decodingError)")
                     }
                 }
             }
