@@ -118,7 +118,7 @@ final  class ImagesListViewController: UIViewController {
         cell.setIsLiked(photo.isLiked)
         
         // Date config
-        cell.dateLabel.text = photo.createdAt?.formattedDate ?? "Unknown date"
+        cell.dateLabel.text = photo.createdAt?.formattedDate ?? nil
     }
 }
 
