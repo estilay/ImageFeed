@@ -9,7 +9,7 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - UI Elements
     private lazy var profileImageView: UIImageView = {
-        let profileImage = UIImage(resource: .avatarPhoto)
+        let profileImage = UIImage(resource: .stubAvatar)
         let profileImageView = UIImageView(image: profileImage)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
@@ -85,12 +85,67 @@ final class ProfileViewController: UIViewController {
                 queue: .main
             ) { [weak self] _ in
                 guard let self else { return }
+                
                 self.updateAvatar()
             }
         updateAvatar()
     }
     
-    // MARK: - Private Methods
+    // MARK: - Actions
+    @objc
+    private func didTapLogoutButton() {
+        showLogoutAlert()
+    }
+    
+    // MARK: - Logout methods
+    private func showLogoutAlert() {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(
+                title: "Выйти",
+                message: "Вы уверены, что хотите выйти?",
+                preferredStyle: .alert
+            )
+            
+            let confirmAction = UIAlertAction(
+                title: "Да",
+                style: .default
+            ) { [weak self] _ in
+                self?.performLogout()
+            }
+            
+            let cancelAction = UIAlertAction(
+                title: "Отмена",
+                style: .default
+            )
+            
+            alert.addAction(confirmAction)
+            alert.addAction(cancelAction)
+            
+            self.present(alert, animated: true)
+        }
+    }
+    
+    private func performLogout() {
+        ProfileLogoutService.shared.profileLogout()
+        navigateToSplashScreen()
+    }
+    
+    private func navigateToSplashScreen() {
+        let window = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
+        
+        guard let window else {
+            assertionFailure("[ProfileViewController]: Invalid window configuration")
+            return
+        }
+
+        let splashViewController = SplashViewController()
+        
+        window.rootViewController = splashViewController
+    }
+    // MARK: - updateProfileDetails
     private func updateProfileDetails() {
         if let profile = profileService.profile {
             nameLabel.text = profile.name
@@ -135,14 +190,7 @@ final class ProfileViewController: UIViewController {
                 }
             }
     }
-    // MARK: - Actions
-    // TODO:
-    @objc
-    private func didTapLogoutButton() {
-        
-    }
 }
-
 
 // MARK: - UI Setup
 extension ProfileViewController {

@@ -22,4 +22,9 @@ final class OAuth2TokenStorage {
             }
         }
     }
+    
+    func clearToken() {
+            token = nil
+            print("[OAuth2TokenStorage]: Token cleared")
+        }
 }

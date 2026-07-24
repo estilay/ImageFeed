@@ -1,6 +1,11 @@
 import UIKit
+import Kingfisher
 
+// MARK: - SingleImageViewController
 final class SingleImageViewController: UIViewController {
+    // MARK: - Properties
+    var imageURL: String?
+    
     var image: UIImage? {
         didSet {
             updateImageViewWithImage()
@@ -10,11 +15,16 @@ final class SingleImageViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet private weak var imageView: UIImageView!
     
+    
+    // MARK: -  Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        loadImage()
         setupImageAndScrollView()
     }
+    
+    // MARK: - Actions
     
     @IBAction func didTapBackwardButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
@@ -29,6 +39,62 @@ final class SingleImageViewController: UIViewController {
         present(share, animated: true, completion: nil)
     }
     
+    // MARK: - Load Image
+    private func loadImage() {
+        guard let urlString = imageURL,
+              let fullImageUrl = URL(string: urlString) else {
+            imageView.image = UIImage(resource: .stub)
+            return
+        }
+        
+        UIBlockingProgressHud.show()
+        
+        imageView.kf.setImage(
+            with: fullImageUrl,
+            placeholder: UIImage(resource: .stub),
+            options: [
+                .cacheOriginalImage
+            ]
+        ) { [weak self] result in
+            
+            UIBlockingProgressHud.dismiss()
+            
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let imageResult):
+                self.image = imageResult.image
+                self.setupImageAndScrollView()
+                
+            case .failure(let error):
+                print("Failed to load image: \(error)")
+                self.showError()
+            }
+        }
+    }
+    
+    private func showError() {
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: "Что-то пошло не так. Попробовать еще раз?",
+            preferredStyle: .alert
+            )
+        
+        let retryAction = UIAlertAction(title: "Повторить", style: .default) { [weak self] _ in
+            self?.loadImage()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Не надо", style: .default) { [weak self] _ in
+            self?.imageView.image = UIImage(resource: .stub)
+        }
+        
+        alert.addAction(retryAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+    
+    // MARK: - Private zoom methods
     private func setupImageAndScrollView() {
         guard let image else { return }
         imageView.image = image
@@ -82,7 +148,7 @@ final class SingleImageViewController: UIViewController {
     
 }
 
-
+// MARK: - UIScrollViewDelegate
 extension SingleImageViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         imageView
@@ -96,3 +162,4 @@ extension SingleImageViewController: UIScrollViewDelegate {
         updateContentInsetForCentering()
     }
 }
+
