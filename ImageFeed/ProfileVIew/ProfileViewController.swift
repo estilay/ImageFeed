@@ -127,10 +127,10 @@ final class ProfileViewController: UIViewController {
     
     private func performLogout() {
         ProfileLogoutService.shared.profileLogout()
-        navigateToAuthScreen()
+        navigateToSplashScreen()
     }
     
-    private func navigateToAuthScreen() {
+    private func navigateToSplashScreen() {
         let window = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap { $0.windows }
@@ -141,15 +141,9 @@ final class ProfileViewController: UIViewController {
             return
         }
 
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        guard let authViewController = storyboard.instantiateViewController(
-            withIdentifier: "AuthViewController"
-        ) as? AuthViewController else {
-            assertionFailure("[ProfileViewController]: Invalid AuthViewController ID")
-            return
-        }
+        let splashViewController = SplashViewController()
         
-        window.rootViewController = authViewController
+        window.rootViewController = splashViewController
     }
     // MARK: - updateProfileDetails
     private func updateProfileDetails() {

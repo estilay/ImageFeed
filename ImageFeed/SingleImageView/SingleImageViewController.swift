@@ -65,6 +65,7 @@ final class SingleImageViewController: UIViewController {
             case .success(let imageResult):
                 self.image = imageResult.image
                 self.setupImageAndScrollView()
+                
             case .failure(let error):
                 print("Failed to load image: \(error)")
                 self.showError()
