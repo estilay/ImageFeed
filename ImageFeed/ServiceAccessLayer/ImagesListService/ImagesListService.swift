@@ -1,33 +1,6 @@
 import Foundation
 import CoreGraphics
 
-struct PhotoResult: Codable {
-    let id: String
-    let createdAt: Date
-    let updatedAt: Date
-    let width: Int
-    let height: Int
-    let blurHash: String?
-    let likes: Int
-    let likedByUser: Bool
-    let description: String?
-    let urls: UrlsResult
-}
-
-struct UrlsResult: Codable {
-    let full: String
-    let thumb: String
-}
-
-struct LikeResponse: Codable {
-    let photo: LikePhotoResponse
-}
-
-struct LikePhotoResponse: Codable {
-    let id: String
-    let likedByUser: Bool
-}
-
 // MARK: - ImagesListService
 final class ImagesListService {
     static let shared = ImagesListService()
