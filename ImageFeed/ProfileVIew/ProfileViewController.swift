@@ -1,12 +1,17 @@
 import UIKit
-import Kingfisher
 
-final class ProfileViewController: UIViewController {
-    // MARK: - Properties
-    private let profileService = ProfileService.shared
-    private let token = OAuth2TokenStorage.shared.token
-    private var profileImageServiceObserver: NSObjectProtocol?
-    
+// MARK: - ProfileViewControllerProtocol
+public protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfileViewPresenterProtocol? { get set }
+    func updateProfileDetails(name: String, loginName: String, bio: String)
+    func updateAvatar(image: UIImage?)
+    func showLogoutAlert()
+    func navigateToSplashScreen()
+}
+
+// MARK: - ProfileViewController
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    var presenter: ProfileViewPresenterProtocol?
     // MARK: - UI Elements
     private lazy var profileImageView: UIImageView = {
         let profileImage = UIImage(resource: .stubAvatar)
@@ -76,30 +81,18 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        updateProfileDetails()
-        
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self else { return }
-                
-                self.updateAvatar()
-            }
-        updateAvatar()
+        presenter?.viewDidLoad()
     }
     
     // MARK: - Actions
     @objc
     private func didTapLogoutButton() {
-        showLogoutAlert()
+        presenter?.didTapLogoutButton()
     }
     
     // MARK: - Logout methods
-    private func showLogoutAlert() {
-        DispatchQueue.main.async {
+    func showLogoutAlert() {
+        
             let alert = UIAlertController(
                 title: "Выйти",
                 message: "Вы уверены, что хотите выйти?",
@@ -110,7 +103,7 @@ final class ProfileViewController: UIViewController {
                 title: "Да",
                 style: .default
             ) { [weak self] _ in
-                self?.performLogout()
+                self?.presenter?.confirmLogout()
             }
             
             let cancelAction = UIAlertAction(
@@ -122,15 +115,9 @@ final class ProfileViewController: UIViewController {
             alert.addAction(cancelAction)
             
             self.present(alert, animated: true)
-        }
     }
     
-    private func performLogout() {
-        ProfileLogoutService.shared.profileLogout()
-        navigateToSplashScreen()
-    }
-    
-    private func navigateToSplashScreen() {
+    func navigateToSplashScreen() {
         let window = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap { $0.windows }
@@ -140,55 +127,21 @@ final class ProfileViewController: UIViewController {
             assertionFailure("[ProfileViewController]: Invalid window configuration")
             return
         }
-
+        
         let splashViewController = SplashViewController()
         
         window.rootViewController = splashViewController
     }
+    
     // MARK: - updateProfileDetails
-    private func updateProfileDetails() {
-        if let profile = profileService.profile {
-            nameLabel.text = profile.name
-            loginNameLabel.text = profile.loginName
-            descriptionLabel.text = profile.bio
-        }
+    func updateProfileDetails(name: String, loginName: String, bio: String) {
+        nameLabel.text = name
+        loginNameLabel.text = loginName
+        descriptionLabel.text = bio
     }
     
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let imageUrl = URL(string: profileImageURL)
-        else { return }
-
-        
-        let placeholderImage = UIImage(systemName: "person.circle.fill")?
-            .withTintColor(.white, renderingMode: .alwaysOriginal)
-            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
-        
-        let processor = RoundCornerImageProcessor(cornerRadius: 35)
-        profileImageView.kf.indicatorType = .activity
-        profileImageView.kf.setImage(
-            with: imageUrl,
-            placeholder: placeholderImage,
-            options: [
-                .processor(processor),
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage,
-                .forceRefresh
-            ]) { result in
-                
-                switch result {
-                case . success(let value):
-                    print(value.image)
-                    
-                    print(value.cacheType)
-                    
-                    print(value.source)
-                    
-                case .failure(let error):
-                    print(error)
-                }
-            }
+    func updateAvatar(image: UIImage?) {
+        profileImageView.image = image ?? UIImage(resource: .stubAvatar)
     }
 }
 

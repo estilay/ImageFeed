@@ -12,6 +12,8 @@ final class TabBarController: UITabBarController {
         
         let imagesListViewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController")
         
+        let presenter = ProfileViewPresenter()
+        
         let profileViewController = ProfileViewController()
         profileViewController.tabBarItem = UITabBarItem(
             title: "",
@@ -19,6 +21,8 @@ final class TabBarController: UITabBarController {
             selectedImage: nil
         )
         
+        profileViewController.presenter = presenter
+        presenter.view = profileViewController
         
         viewControllers = [imagesListViewController, profileViewController]
     }
