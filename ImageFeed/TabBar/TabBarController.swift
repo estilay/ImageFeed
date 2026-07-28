@@ -10,9 +10,13 @@ final class TabBarController: UITabBarController {
     private func setupViewControllers() {
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         
-        let imagesListViewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController")
+        guard let imagesListViewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController") as? ImagesListViewController else { return }
         
-        let presenter = ProfileViewPresenter()
+        let imagesListPresenter = ImagesListPresenter()
+        imagesListViewController.presenter = imagesListPresenter
+        imagesListPresenter.view = imagesListViewController
+        
+        let profilePresenter = ProfileViewPresenter()
         
         let profileViewController = ProfileViewController()
         profileViewController.tabBarItem = UITabBarItem(
@@ -21,8 +25,8 @@ final class TabBarController: UITabBarController {
             selectedImage: nil
         )
         
-        profileViewController.presenter = presenter
-        presenter.view = profileViewController
+        profileViewController.presenter = profilePresenter
+        profilePresenter.view = profileViewController
         
         viewControllers = [imagesListViewController, profileViewController]
     }

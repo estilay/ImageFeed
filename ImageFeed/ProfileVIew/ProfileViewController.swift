@@ -92,7 +92,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     
     // MARK: - Logout methods
     func showLogoutAlert() {
-        
             let alert = UIAlertController(
                 title: "Выйти",
                 message: "Вы уверены, что хотите выйти?",
