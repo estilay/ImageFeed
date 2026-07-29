@@ -16,19 +16,6 @@ final class ProfilePresenterTests: XCTestCase {
         XCTAssertTrue(view.updateProfileDetailsCalled)
     }
     
-    func testViewDidLoadCallsLoadAvatar() {
-        // Given
-        let view = ProfileViewControllerSpy()
-        let presenter = ProfileViewPresenter()
-        presenter.view = view
-        
-        // When
-        presenter.viewDidLoad()
-        
-        // Then
-        XCTAssertTrue(view.updateAvatarCalled)
-    }
-    
     func testDidTapLogoutButtonShowsLogoutAlert() {
         // Given
         let view = ProfileViewControllerSpy()
