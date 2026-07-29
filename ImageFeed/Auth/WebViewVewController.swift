@@ -18,6 +18,7 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
     
     private lazy var webView: WKWebView = {
         let webView = WKWebView()
+        webView.accessibilityIdentifier = "UnsplashWebView"
         webView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(webView)
         
@@ -36,6 +37,7 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         
         webView.navigationDelegate = self
         presenter?.viewDidLoad()

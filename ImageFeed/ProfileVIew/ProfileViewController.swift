@@ -70,6 +70,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             logoutButton.addTarget(self, action: #selector(self.didTapLogoutButton), for: .touchUpInside)
         }
         
+        logoutButton.accessibilityIdentifier = "logoutButton"
         logoutButton.tintColor = .ypRed
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logoutButton)
@@ -92,28 +93,30 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     
     // MARK: - Logout Alert
     func showLogoutAlert() {
-            let alert = UIAlertController(
-                title: "Выйти",
-                message: "Вы уверены, что хотите выйти?",
-                preferredStyle: .alert
-            )
-            
-            let confirmAction = UIAlertAction(
-                title: "Да",
-                style: .default
-            ) { [weak self] _ in
-                self?.presenter?.confirmLogout()
-            }
-            
-            let cancelAction = UIAlertAction(
-                title: "Отмена",
-                style: .default
-            )
-            
-            alert.addAction(confirmAction)
-            alert.addAction(cancelAction)
-            
-            self.present(alert, animated: true)
+        let alert = UIAlertController(
+            title: "Выйти",
+            message: "Вы уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        alert.view.accessibilityIdentifier = "LogoutAlert"
+        
+        let confirmAction = UIAlertAction(
+            title: "Да",
+            style: .default
+        ) { [weak self] _ in
+            self?.presenter?.confirmLogout()
+        }
+        
+        let cancelAction = UIAlertAction(
+            title: "Отмена",
+            style: .default
+        )
+        
+        alert.addAction(confirmAction)
+        alert.addAction(cancelAction)
+        
+        self.present(alert, animated: true)
     }
     
     // MARK: - Navigation

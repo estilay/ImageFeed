@@ -25,6 +25,7 @@ final class AuthViewController: UIViewController {
     
     private lazy var loginButton: UIButton = {
         let loginButton = UIButton(type: .system)
+        loginButton.accessibilityIdentifier = "LoginButton"
         loginButton.setTitle("Войти", for: .normal)
         loginButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
         loginButton.tintColor = .ypBlack

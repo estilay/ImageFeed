@@ -12,6 +12,7 @@ final class SingleImageViewController: UIViewController {
         }
     }
     
+    @IBOutlet weak var backwardButton: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet private weak var imageView: UIImageView!
     
@@ -19,6 +20,7 @@ final class SingleImageViewController: UIViewController {
     // MARK: -  Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        backwardButton.accessibilityIdentifier = "BackwardButton"
         
         loadImage()
         setupImageAndScrollView()
