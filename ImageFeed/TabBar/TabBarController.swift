@@ -14,7 +14,7 @@ final class TabBarController: UITabBarController {
         
         let imagesListPresenter = ImagesListPresenter()
         imagesListViewController.presenter = imagesListPresenter
-        imagesListPresenter.view = imagesListViewController
+        imagesListViewController.configure(imagesListPresenter)
         
         let profilePresenter = ProfileViewPresenter()
         

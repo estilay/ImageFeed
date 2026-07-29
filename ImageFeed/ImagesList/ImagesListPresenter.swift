@@ -18,6 +18,11 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     private let imagesListService = ImagesListService.shared
     private(set) var photos: [Photo] = []
     
+    // MARK: - Test Helpers
+    func setPhotosForTesting(_ photos: [Photo]) {
+        self.photos = photos
+    }
+    
     // MARK: - Lifecycle
     func viewDidLoad() {
         setupNotificationObserver()

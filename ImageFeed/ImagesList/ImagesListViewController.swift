@@ -22,6 +22,12 @@ final  class ImagesListViewController: UIViewController, ImagesListViewControlle
         presenter?.photos ?? []
     }
     
+    // MARK: - Configure
+    func configure(_ presenter: ImagesListPresenterProtocol) {
+        self.presenter = presenter
+        self.presenter?.view = self
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
