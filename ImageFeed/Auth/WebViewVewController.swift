@@ -62,6 +62,19 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
         }
     }
     
+    // MARK: - WebViewViewController Protocol methods
+    func load(request: URLRequest) {
+        webView.load(request)
+    }
+    
+    func setProgressValue(_ newValue: Float) {
+        progressView.progress = newValue
+    }
+    
+    func setProgressHidden(_ isHidden: Bool) {
+        progressView.isHidden = isHidden
+    }
+    
     // MARK: - UI methods
     private func setupUI() {
         view.backgroundColor = .ypWhite
@@ -89,21 +102,7 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
             progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
         ])
     }
-    
-    // MARK: - Private methods
-    func load(request: URLRequest) {
-        webView.load(request)
-    }
-    
-    func setProgressValue(_ newValue: Float) {
-        progressView.progress = newValue
-    }
-    
-    func setProgressHidden(_ isHidden: Bool) {
-        progressView.isHidden = isHidden
-    }
 }
-
 // MARK: - WKNavigationDelegate
 extension WebViewViewController: WKNavigationDelegate {
     func webView(

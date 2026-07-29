@@ -90,7 +90,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         presenter?.didTapLogoutButton()
     }
     
-    // MARK: - Logout methods
+    // MARK: - Logout Alert
     func showLogoutAlert() {
             let alert = UIAlertController(
                 title: "Выйти",
@@ -116,6 +116,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             self.present(alert, animated: true)
     }
     
+    // MARK: - Navigation
     func navigateToSplashScreen() {
         let window = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
@@ -132,7 +133,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         window.rootViewController = splashViewController
     }
     
-    // MARK: - updateProfileDetails
+    // MARK: - Profile update methods
     func updateProfileDetails(name: String, loginName: String, bio: String) {
         nameLabel.text = name
         loginNameLabel.text = loginName
@@ -146,7 +147,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
 
 // MARK: - UI Setup
 extension ProfileViewController {
-    // MARK: - Setup UI method
+    //  Setup UI method
     private func setupUI() {
         view.backgroundColor = .ypBlack
         setupConstraints()

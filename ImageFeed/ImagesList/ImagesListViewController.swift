@@ -49,7 +49,7 @@ final  class ImagesListViewController: UIViewController, ImagesListViewControlle
         }
     }
     
-    // MARK: - ImagesListViewControllerProtocol
+    // MARK: - ImagesListViewController Protocol Methods
     func updateTableViewAnimated(with indexPaths: [IndexPath], isInsert: Bool) {
         tableView.performBatchUpdates {
             if isInsert {

@@ -17,7 +17,7 @@ final class ProfileViewPresenter: ProfileViewPresenterProtocol {
     private let profileService = ProfileService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
     
-    
+    // MARK: - Lifecycle
     func viewDidLoad() {
         loadProfile()
         setupAvatarObserver()
@@ -25,6 +25,7 @@ final class ProfileViewPresenter: ProfileViewPresenterProtocol {
         
     }
     
+    // MARK: - Public Methods
     func loadProfile() {
         guard let profile = profileService.profile else {
             view?.updateProfileDetails(name: "Имя не указано", loginName: "@неизвестный_пользователь", bio: "Профиль не заполнен")
@@ -38,9 +39,11 @@ final class ProfileViewPresenter: ProfileViewPresenterProtocol {
     func didTapLogoutButton() {
         view?.showLogoutAlert()
     }
+    
     func confirmLogout() {
         ProfileLogoutService.shared.profileLogout()
-        view?.navigateToSplashScreen()
+        self.view?.navigateToSplashScreen()
+           
     }
     
     func loadAvatar() {
@@ -81,6 +84,7 @@ final class ProfileViewPresenter: ProfileViewPresenterProtocol {
         }
     }
     
+    // MARK: - Private Methods
     private func setupAvatarObserver() {
         profileImageServiceObserver = NotificationCenter.default
             .addObserver(
@@ -102,6 +106,7 @@ final class ProfileViewPresenter: ProfileViewPresenterProtocol {
         }
     }
     
+    // MARK: - Deinit
     deinit {
         removeAvatarObserver()
     }
