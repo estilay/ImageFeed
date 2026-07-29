@@ -2,46 +2,34 @@
 import XCTest
 
 final class ProfilePresenterTests: XCTestCase {
-    // MARK: - Tests
-    @MainActor
-    func testPresenterLoadsProfile() {
+    
+    func testViewDidLoadCallsLoadProfile() {
         // Given
         let view = ProfileViewControllerSpy()
         let presenter = ProfileViewPresenter()
         presenter.view = view
         
         // When
-        presenter.loadProfile()
+        presenter.viewDidLoad()
         
         // Then
         XCTAssertTrue(view.updateProfileDetailsCalled)
     }
     
-    @MainActor
-    func testPresenterCallsUpdateAvatar() {
+    func testViewDidLoadCallsLoadAvatar() {
         // Given
         let view = ProfileViewControllerSpy()
         let presenter = ProfileViewPresenter()
         presenter.view = view
         
         // When
-        presenter.loadAvatar()
+        presenter.viewDidLoad()
         
         // Then
-        if ProfileImageService.shared.avatarURL != nil {
-            let expectation = expectation(description: "Avatar loading")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                XCTAssertTrue(view.updateAvatarCalled)
-                expectation.fulfill()
-            }
-            wait(for: [expectation], timeout: 3)
-        } else {
-            XCTAssertTrue(true)
-        }
+        XCTAssertTrue(view.updateAvatarCalled)
     }
     
-    @MainActor
-    func testPresenterShowыLogoutAlert() {
+    func testDidTapLogoutButtonShowsLogoutAlert() {
         // Given
         let view = ProfileViewControllerSpy()
         let presenter = ProfileViewPresenter()
@@ -54,8 +42,7 @@ final class ProfilePresenterTests: XCTestCase {
         XCTAssertTrue(view.showLogoutAlertCalled)
     }
     
-    @MainActor
-    func testConfirmLogoutCallsProfileLogout() {
+    func testConfirmLogoutNavigatesToSplashScreen() {
         // Given
         let view = ProfileViewControllerSpy()
         let presenter = ProfileViewPresenter()

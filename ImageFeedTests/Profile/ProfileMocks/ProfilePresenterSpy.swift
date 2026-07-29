@@ -2,7 +2,7 @@
 import Foundation
 
 final class ProfilePresenterSpy: ProfileViewPresenterProtocol {
-    var view: ProfileViewControllerProtocol?
+    weak var view: ProfileViewControllerProtocol?
     
     var viewDidLoadCalled = false
     var didTapLogoutButtonCalled = false

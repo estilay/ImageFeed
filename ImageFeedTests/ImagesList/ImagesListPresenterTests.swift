@@ -4,20 +4,6 @@ import XCTest
 final class ImagesListPresenterTests: XCTestCase {
     // MARK: - Tests
     @MainActor
-    func testViewDidLoadCallsFetchPhotosNextPage() {
-        // Given
-        let view = ImagesListViewControllerSpy()
-        let presenter = ImagesListPresenter()
-        presenter.view = view
-        
-        // When
-        presenter.viewDidLoad()
-        
-        // Then
-        XCTAssertNotNil(presenter)
-    }
-    
-    @MainActor
     func testWillDisplayCellAtLastIndexCallsFetchPhotosNextPage() {
         // Given
         let view = ImagesListViewControllerSpy()
