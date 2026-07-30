@@ -1,42 +1,42 @@
 import UIKit
 import Kingfisher
 
-final  class ImagesListViewController: UIViewController {
+// MARK: - ImagesListViewControllerProtocol
+protocol ImagesListViewControllerProtocol: AnyObject {
+    var presenter: ImagesListPresenterProtocol? { get set }
+    func updateTableViewAnimated(with indexPaths: [IndexPath], isInsert: Bool)
+    func updateCellLikeStatus(at indexPath: IndexPath, isLiked: Bool)
+    func showLikeErrorAlert()
+    func showLoadingIndicator()
+    func hideLoadingIndicator()
+}
+
+// MARK: - ImagesListViewController
+final  class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
+    // MARK: - Properties
+    var presenter: ImagesListPresenterProtocol?
     @IBOutlet weak private var tableView: UITableView!
     
-    private let imagesListService = ImagesListService.shared
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private var photos: [Photo] = []
-
-    private var observer: NSObjectProtocol?
+    private var photos: [Photo] {
+        presenter?.photos ?? []
+    }
     
+    // MARK: - Configure
+    func configure(_ presenter: ImagesListPresenterProtocol) {
+        self.presenter = presenter
+        self.presenter?.view = self
+    }
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupTableView()
-        setupNotificationObserver()
-        
-        // Loading first page
-        imagesListService.fetchPhotosNextPage()
+        presenter?.viewDidLoad()
     }
     
-    deinit {
-        if let observer = observer {
-            NotificationCenter.default.removeObserver(observer)
-        }
-    }
-        
-    // MARK: - Setup Notification Observer
-    private func setupNotificationObserver() {
-           observer = NotificationCenter.default.addObserver(
-               forName: ImagesListService.didChangeNotification,
-               object: nil,
-               queue: .main
-           ) { [weak self] _ in
-               self?.updateTableViewAnimated()
-           }
-       }
-    // MARK: - Prepare ShowSingleImage Segue
+    // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showSingleImageSegueIdentifier {
             guard
@@ -54,29 +54,44 @@ final  class ImagesListViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
-
-    private func updateTableViewAnimated() {
-        let oldCount = photos.count
-        let newCount = imagesListService.photos.count
-        photos = imagesListService.photos
-        
-        if oldCount != newCount {
-            tableView.performBatchUpdates {
-                if oldCount < newCount {
-                    let indexPaths = (oldCount..<newCount).map { i in
-                        IndexPath(row: i, section: 0)
-                    }
-                    tableView.insertRows(at: indexPaths, with: .automatic)
-                } else if oldCount > newCount {
-                    let indexPaths = (newCount..<oldCount).map { i in
-                        IndexPath(row: i, section: 0)
-                    }
-                    tableView.deleteRows(at: indexPaths, with: .automatic)
-                }
-            } completion: { _ in }
-        }
+    
+    // MARK: - ImagesListViewController Protocol Methods
+    func updateTableViewAnimated(with indexPaths: [IndexPath], isInsert: Bool) {
+        tableView.performBatchUpdates {
+            if isInsert {
+                tableView.insertRows(at: indexPaths, with: .automatic)
+            } else {
+                tableView.deleteRows(at: indexPaths, with: .automatic)
+            }
+        } completion: { _ in }
     }
-    // MARK: - SetupTableView
+    
+    func updateCellLikeStatus(at indexPath: IndexPath, isLiked: Bool) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? ImagesListCell else {
+            return
+        }
+        cell.setIsLiked(isLiked)
+    }
+    
+    func showLoadingIndicator() {
+        UIBlockingProgressHud.show()
+    }
+    
+    func hideLoadingIndicator() {
+        UIBlockingProgressHud.dismiss()
+    }
+    
+    func showLikeErrorAlert() {
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: "Не удалось изменить статус лайка. Попробуйте еще раз",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    // MARK: - Setup Methods
     private func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -113,7 +128,7 @@ final  class ImagesListViewController: UIViewController {
         } else {
             cell.cellImage.image = UIImage(resource: .stub)
         }
-
+        
         // Like config
         cell.setIsLiked(photo.isLiked)
         
@@ -130,44 +145,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
             return
         }
         
-        let photo = photos[indexPath.row]
-        let newLikeStatus = !photo.isLiked
-        print("[ImagesListViewController]: \(newLikeStatus ? "Liking" : "Unliking") photo \(photo.id)")
-        
-        cell.setIsLiked(newLikeStatus)
-        
-        UIBlockingProgressHud.show()
-        imagesListService.changeLike(photoId: photo.id, isLike: newLikeStatus) { [weak self] result in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                UIBlockingProgressHud.dismiss()
-                switch result {
-                case .success:
-                    self.photos = self.imagesListService.photos
-                    let updatedPhoto = self.photos[indexPath.row]
-                    cell.setIsLiked(updatedPhoto.isLiked)
-                    
-                case .failure(let error):
-                    print("[ImagesListViewController]: Failed to change like status: \(error.localizedDescription)")
-                    
-                    // Reject changes for Like Status
-                    cell.setIsLiked(photo.isLiked)
-                    
-                    self.showLikeErrorAlert()
-                }
-            }
-        }
-    }
-    
-    func showLikeErrorAlert() {
-        let alert = UIAlertController(
-            title: "Ошибка",
-            message: "Не удалось изменить статус лайка. Попробуйте еще раз",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        presenter?.didTapLike(at: indexPath)
     }
 }
 
@@ -178,7 +156,7 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-       guard let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as? ImagesListCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as? ImagesListCell else {
             print("[ImagesListViewController] Error casting cell to type ImagesListCell")
             return UITableViewCell()
         }
@@ -207,9 +185,6 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == photos.count - 1 {
-            print("[ImagesListViewController]: Loading next page (row: \(indexPath.row), total: \(photos.count))")
-            imagesListService.fetchPhotosNextPage()
-        }
+        presenter?.willDisplayCell(at: indexPath)
     }
 }

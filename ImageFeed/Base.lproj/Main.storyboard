@@ -48,7 +48,8 @@
         <!--Web View View Controller-->
         <scene sceneID="QXy-aZ-c93">
             <objects>
-                <viewController id="SHB-yn-a6C" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kAN-lv-ygX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewController storyboardIdentifier="WebViewViewController" id="SHB-yn-a6C" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="b9I-89-RCH">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -56,7 +57,6 @@
                     </view>
                     <navigationItem key="navigationItem" id="yhn-eG-oJr"/>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="kAN-lv-ygX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="163" y="-876"/>
         </scene>
@@ -232,6 +232,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="ft7-fL-aUb"/>
                     <connections>
+                        <outlet property="backwardButton" destination="TsP-Tw-exO" id="3yc-aU-bVY"/>
                         <outlet property="imageView" destination="CYG-k2-ThZ" id="FXQ-nW-CBo"/>
                         <outlet property="scrollView" destination="RlN-Sv-iHj" id="L03-4E-FM1"/>
                     </connections>
