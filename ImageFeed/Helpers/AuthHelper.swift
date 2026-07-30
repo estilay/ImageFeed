@@ -1,19 +1,19 @@
 import Foundation
 
 protocol AuthHelperProtocol {
-    func authRequest() -> URLRequest?
+    func createAuthURLRequest() -> URLRequest?
     func code(from url: URL) -> String?
 }
 
 final class AuthHelper: AuthHelperProtocol {
-    let configuration: AuthConfiguration
+    private let configuration: AuthConfiguration
     
     init(configuration: AuthConfiguration = .standard) {
         self.configuration = configuration
     }
     
-    func authRequest() -> URLRequest? {
-        guard let url = authURL() else {
+    func createAuthURLRequest() -> URLRequest? {
+        guard let url = createAuthURL() else {
             return nil
         }
         
@@ -21,7 +21,7 @@ final class AuthHelper: AuthHelperProtocol {
         return request
     }
     
-    func authURL() -> URL? {
+    func createAuthURL() -> URL? {
         guard var urlComponents = URLComponents(string: configuration.authURLString) else {
             return nil
         }

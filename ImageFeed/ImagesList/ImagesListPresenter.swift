@@ -49,7 +49,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         view?.showLoadingIndicator()
         
         imagesListService.changeLike(photoId: photo.id, isLike: newLikeStatus) { [weak self] result in
-            guard let self = self else { return }
+            guard let self else { return }
             
             DispatchQueue.main.async {
                 self.view?.hideLoadingIndicator()

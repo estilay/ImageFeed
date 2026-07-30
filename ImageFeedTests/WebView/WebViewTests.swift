@@ -70,7 +70,7 @@ final class WebViewTests: XCTestCase {
         let authHelper = AuthHelper(configuration: configuration)
         
         // When
-        let url = authHelper.authURL()
+        let url = authHelper.createAuthURL()
         guard let urlString = url?.absoluteString else {
             XCTFail("Auth URL in nil")
             return
